@@ -5,6 +5,8 @@ extern int motor[];
 
 extern int speed[];
 
+extern int attitude[];
+
 void motor_set_speed();
 
 void motor_set_speed(int speed_fwd, int speed_left, int speed_bwd,
