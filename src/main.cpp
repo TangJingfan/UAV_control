@@ -1,4 +1,5 @@
 #include "config.h"
+#include "imu.h"
 #include "port.h"
 #include "uav_motor.h"
 #include <Arduino.h>
@@ -11,7 +12,10 @@ state current_state = waiting;
 String received_command = "";
 String executing_command = "";
 
-void setup() { config_setup(); }
+void setup() {
+  config_setup();
+  imu_setup();
+}
 
 void loop() {
   while (Serial2.available() > 0) {
