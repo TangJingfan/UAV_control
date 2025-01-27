@@ -55,4 +55,49 @@ float e_P[2][2] = {{1, 0}, {0, 1}};
 // 这里的卡尔曼增益矩阵K是一个2X2的方阵
 float k_k[2][2] = {{0, 0}, {0, 0}};
 
-void imu_setup() {}
+static void initialize_kalman_filter() {
+  e_P[0][0] = 1;
+  e_P[0][1] = 0;
+  e_P[1][0] = 0;
+  e_P[1][1] = 1;
+  k_k[0][0] = 0;
+  k_k[0][1] = 0;
+  k_k[1][0] = 0;
+  k_k[1][1] = 0;
+}
+
+void imu_setup() {
+  // init kalman filter
+  initialize_kalman_filter();
+
+  // set I2C pin
+  Wire.setSCL(I2C_SCL);
+  Wire.setSDA(I2C_SDA);
+  Wire.begin();
+
+  // init MPU6500
+  if (!MPU6500_on_drone.init()) {
+    Serial2.println("MPU6500 does not respond");
+  } else {
+    Serial2.println("MPU6500 is connected");
+  }
+
+  // calibrating imu
+  Serial2.println(
+      "Position you MPU6500 flat and don't move it - calibrating...");
+  // wait for sensor to be stable
+  delay(1000);
+  MPU6500_on_drone.autoOffsets();
+  Serial2.println("Done!");
+
+  // setup gyroscope
+  MPU6500_on_drone.enableGyrDLPF();
+  MPU6500_on_drone.setGyrDLPF(MPU6500_DLPF_6);
+  MPU6500_on_drone.setSampleRateDivider(5);
+  MPU6500_on_drone.setGyrRange(MPU6500_GYRO_RANGE_250);
+
+  // setup accelerometer
+  MPU6500_on_drone.setAccRange(MPU6500_ACC_RANGE_2G);
+  MPU6500_on_drone.enableAccDLPF(true);
+  MPU6500_on_drone.setAccDLPF(MPU6500_DLPF_6);
+}
