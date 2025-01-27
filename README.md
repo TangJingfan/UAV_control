@@ -22,7 +22,7 @@ Before compiling and running the code, make sure you have the following installe
 
 - **Hc-T串口助手**: This works to send information to UAV.
 
-![HC-T串口助手](./image/Hc-T串口助手.png)
+![HC-T串口助手](./image/HC-T串口助手.png)
 
 ## Compile & Run
 
