@@ -1,8 +1,15 @@
 #include "config.h"
 #include "port.h"
 #include <Arduino.h>
+#include <SoftwareSerial.h>
 
+// Hardware Serial Port
+// Micro USB
 HardwareSerial Serial1(RX1, TX1);
+
+// Software Serial Port
+// HC14
+SoftwareSerial hc_14(RX2, TX2);
 
 int motor_num = 4;
 
@@ -26,9 +33,7 @@ void config_setup() {
   // Serial1 is for Micro USB wired connection
   Serial1.begin(115200);
 
-  // initialize Serial2
-  // Serial2 is for LoRa communication
-  Serial2.setRx(RX2);
-  Serial2.setTx(TX2);
-  Serial2.begin(115200);
+  // initialize hc_14
+  // hc_14 is for LoRa communication
+  hc_14.begin(115200);
 }

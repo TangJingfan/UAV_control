@@ -2,6 +2,9 @@
 #include "port.h"
 #include "uav_motor.h"
 #include <Arduino.h>
+#include <LoRa.h>
+#include <SPI.h>
+#include <SoftwareSerial.h>
 
 enum state { waiting, executing };
 
