@@ -3,4 +3,6 @@
 
 void imu_setup();
 
+void calculate_euler_angle();
+
 #endif

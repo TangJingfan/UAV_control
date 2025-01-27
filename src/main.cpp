@@ -25,7 +25,7 @@ void loop() {
   }
 
   // use Euler angle to represent UAV's attitude
-  // basic format: <y:0,r:0,p:0>
+  // basic format: <y:0,p:0,r:0>
   // Serial1.println("Received Message:");
   // Serial1.println(received_command);
 
@@ -46,14 +46,15 @@ void loop() {
         // assign value to attitude array
         // sscanf(executing_command.substring(begin, end).c_str(),
         //        "<y:%d,r:%d,p:%d>", &attitude[0], &attitude[1], &attitude[2]);
+
         // assign value to speed array
         sscanf(executing_command.substring(begin, end).c_str(), "<%d,%d,%d,%d>",
                &speed[0], &speed[1], &speed[2], &speed[3]);
       }
     }
-    Serial1.printf("yaw:%d\n", attitude[0]);
-    Serial1.printf("roll:%d\n", attitude[1]);
-    Serial1.printf("pitch:%d\n", attitude[2]);
+    Serial1.printf("yaw:%d\n", yaw_pitch_roll[0]);
+    Serial1.printf("roll:%d\n", yaw_pitch_roll[1]);
+    Serial1.printf("pitch:%d\n", yaw_pitch_roll[2]);
 
     // if (attitude[0] == 0 && attitude[1] == 0 && attitude[2] == 0) {
     //   for (int i = 0; i < motor_num; i++) {

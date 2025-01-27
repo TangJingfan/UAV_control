@@ -101,3 +101,10 @@ void imu_setup() {
   MPU6500_on_drone.enableAccDLPF(true);
   MPU6500_on_drone.setAccDLPF(MPU6500_DLPF_6);
 }
+
+void calculate_euler_angle() {
+  // get accelerometer
+  xyzFloat gValue = MPU6500_on_drone.getGValues();
+  // get gyroscope
+  xyzFloat gyr = MPU6500_on_drone.getGyrValues();
+}

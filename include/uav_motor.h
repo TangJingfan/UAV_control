@@ -5,7 +5,7 @@ extern int motor[];
 
 extern int speed[];
 
-extern int attitude[];
+extern int yaw_pitch_roll[];
 
 void motor_set_speed();
 
