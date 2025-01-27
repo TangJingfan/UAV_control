@@ -9,11 +9,7 @@ state current_state = waiting;
 String received_command = "";
 String executing_command = "";
 
-void setup() {
-  config_setup();
-  digitalWrite(LED1, HIGH);
-  delay(5000);
-}
+void setup() { config_setup(); }
 
 void loop() {
   while (Serial1.available() > 0) {
@@ -26,4 +22,9 @@ void loop() {
   // basic format: <y:0,r:0,p:0>
   Serial1.println("Received Message:");
   Serial1.println(received_command);
+
+  digitalWrite(LED1, HIGH);
+  delay(1000);
+  digitalWrite(LED1, LOW);
+  delay(1000);
 }
