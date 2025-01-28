@@ -26,8 +26,6 @@ void loop() {
 
   // use Euler angle to represent UAV's attitude
   // basic format: <y:0,p:0,r:0>
-  // Serial1.println("Received Message:");
-  // Serial1.println(received_command);
 
   switch (current_state) {
   case waiting:
@@ -35,10 +33,12 @@ void loop() {
     break;
   case executing:
     // print executing command
-    // Serial1.println("Executing Message:");
-    // Serial1.println(executing_command);
+    Serial2.println("Executing Message:");
+    Serial2.println(executing_command);
+    // update executing command
     executing_command = received_command;
     received_command = "";
+    // assign speed to speed array
     if (executing_command.length() > 0) {
       int begin = executing_command.indexOf('<');
       int end = executing_command.indexOf('>') + 1;
@@ -52,21 +52,12 @@ void loop() {
                &speed[0], &speed[1], &speed[2], &speed[3]);
       }
     }
-    Serial1.printf("yaw:%d\n", yaw_pitch_roll[0]);
-    Serial1.printf("roll:%d\n", yaw_pitch_roll[1]);
-    Serial1.printf("pitch:%d\n", yaw_pitch_roll[2]);
 
-    // if (attitude[0] == 0 && attitude[1] == 0 && attitude[2] == 0) {
-    //   for (int i = 0; i < motor_num; i++) {
-    //     speed[i] = 10;
-    //   }
-    //   motor_set_speed();
-    // } else {
-    //   for (int i = 0; i < motor_num; i++) {
-    //     speed[i] = 0;
-    //   }
-    //   motor_set_speed();
-    // }
+    // print attitude value
+    Serial2.printf("yaw:%d\n", yaw_pitch_roll[0]);
+    Serial2.printf("roll:%d\n", yaw_pitch_roll[1]);
+    Serial2.printf("pitch:%d\n", yaw_pitch_roll[2]);
+
     motor_set_speed();
     break;
 
@@ -74,8 +65,10 @@ void loop() {
     break;
   }
 
-  digitalWrite(LED1, HIGH);
-  delay(1000);
-  digitalWrite(LED1, LOW);
-  delay(1000);
+  // digitalWrite(LED1, HIGH);
+  // delay(1000);
+  // digitalWrite(LED1, LOW);
+  // delay(1000);
+
+  delay(20);
 }
