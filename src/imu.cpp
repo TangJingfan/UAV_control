@@ -1,8 +1,10 @@
 #include "imu.h"
 #include "port.h"
+#include "uav_motor.h"
 #include <Arduino.h>
 #include <MPU6500_WE.h>
 #include <Wire.h>
+#include <cmath>
 
 #define MPU6500_ADDR 0x68
 
@@ -26,7 +28,7 @@ float roll_v = 0, pitch_v = 0;
 
 // define differential time
 // 定义微分时间
-float now = 0, lasttime = 0, dt = 0;
+float now = 0, last_time = 0, dt = 0;
 
 // three state
 // 三个状态
@@ -54,6 +56,8 @@ float e_P[2][2] = {{1, 0}, {0, 1}};
 // here matrix is a 2 * 2 square matrix
 // 这里的卡尔曼增益矩阵K是一个2X2的方阵
 float k_k[2][2] = {{0, 0}, {0, 0}};
+
+float yaw = 0, roll = 0, pitch = 0;
 
 static void initialize_kalman_filter() {
   e_P[0][0] = 1;
@@ -107,4 +111,41 @@ void calculate_euler_angle() {
   xyzFloat gValue = MPU6500_on_drone.getGValues();
   // get gyroscope
   xyzFloat gyr = MPU6500_on_drone.getGyrValues();
+
+  now = millis();
+  dt = (now - last_time) / 1000.0;
+  last_time = now;
+
+  // calculate angular velocity on roll and pitch
+  roll_v = gyr.x + ((sin(k_pitch) * sin(k_roll)) / cos(k_pitch)) * gyr.y +
+           ((sin(k_pitch) * cos(k_roll)) / cos(k_pitch)) * gyr.z;
+  pitch_v = cos(k_roll) * gyr.y - sin(k_roll) * gyr.z;
+  // priori roll angle and pitch angle
+  gyro_roll = k_roll + dt * roll_v;
+  gyro_pitch = k_pitch + dt * pitch_v;
+
+  // calculate priori converiance matrix
+  e_P[0][0] = e_P[0][0] + 0.0025;
+  e_P[0][1] = e_P[0][1] + 0;
+  e_P[1][0] = e_P[1][0] + 0;
+  e_P[1][1] = e_P[1][1] + 0.0025;
+
+  // calcualte karman gain matrix
+  k_k[0][0] = e_P[0][0] / (e_P[0][0] + 0.3);
+  k_k[0][1] = 0;
+  k_k[1][0] = 0;
+  k_k[1][1] = e_P[1][1] / (e_P[1][1] + 0.3);
+
+  acc_roll = atan(gValue.y / gValue.z) * rad2deg;
+  acc_pitch = -1 * atan(gValue.x / sqrt(sq(gValue.y) + sq(gValue.z))) * rad2deg;
+
+  k_roll = gyro_roll + k_k[0][0] * (acc_roll - gyro_roll);
+  k_pitch = gyro_pitch + k_k[1][1] * (acc_pitch - gyro_pitch);
+
+  roll = 3.0 * k_roll;
+  pitch = 3.0 * k_pitch;
+  yaw += gyr.z * dt;
+  yaw_pitch_roll[0] = yaw;
+  yaw_pitch_roll[1] = pitch;
+  yaw_pitch_roll[2] = roll;
 }
