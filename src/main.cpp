@@ -45,7 +45,7 @@ void loop() {
       if (begin != -1 && end != -1 && begin < end) {
         // assign value to attitude array
         // sscanf(executing_command.substring(begin, end).c_str(),
-        //        "<y:%d,r:%d,p:%d>", &attitude[0], &attitude[1], &attitude[2]);
+        //        "<y:%d,p:%d,r:%d>", &attitude[0], &attitude[1], &attitude[2]);
 
         // assign value to speed array
         sscanf(executing_command.substring(begin, end).c_str(), "<%d,%d,%d,%d>",
