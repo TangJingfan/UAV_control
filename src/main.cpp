@@ -46,39 +46,48 @@ void loop() {
 
   switch (current_state) {
   case waiting:
+    // dt_pid = 0.01;
+    // roll_output = pid_roll.compute(target_yaw_pitch_roll[2],
+    //                                current_yaw_pitch_roll[2], dt_pid);
+    // pitch_output = pid_pitch.compute(target_yaw_pitch_roll[1],
+    //                                  current_yaw_pitch_roll[1], dt_pid);
+    // yaw_output = pid_yaw.compute(target_yaw_pitch_roll[0],
+    //                              current_yaw_pitch_roll[0], dt_pid);
+
+    // update_motor_speeds(roll_output, pitch_output, yaw_output);
     motor_set_speed();
     break;
   case executing:
     // update executing command
     executing_command = received_command;
     received_command = "";
+    current_state = waiting;
     // assign speed to speed array
     if (executing_command.length() > 0) {
       int begin = executing_command.indexOf('<');
       int end = executing_command.indexOf('>') + 1;
       if (begin != -1 && end != -1 && begin < end) {
         // assign value to attitude array
-        sscanf(executing_command.substring(begin, end).c_str(),
-               "<y:%d,p:%d,r:%d>", &target_yaw_pitch_roll[0],
-               &target_yaw_pitch_roll[1], &target_yaw_pitch_roll[2]);
+        // sscanf(executing_command.substring(begin, end).c_str(),
+        //        "<y:%d,p:%d,r:%d>", &target_yaw_pitch_roll[0],
+        //        &target_yaw_pitch_roll[1], &target_yaw_pitch_roll[2]);
 
         // assign value to speed array
-        /*
-          sscanf(executing_command.substring(begin, end).c_str(),
-            "<%d,%d,%d,%d>", &speed[0], &speed[1], &speed[2], &speed[3]);
-        */
+
+        sscanf(executing_command.substring(begin, end).c_str(), "<%d,%d,%d,%d>",
+               &speed[0], &speed[1], &speed[2], &speed[3]);
       }
     }
 
-    dt_pid = 0.01;
-    roll_output = pid_roll.compute(target_yaw_pitch_roll[2],
-                                   current_yaw_pitch_roll[2], dt_pid);
-    pitch_output = pid_pitch.compute(target_yaw_pitch_roll[1],
-                                     current_yaw_pitch_roll[1], dt_pid);
-    yaw_output = pid_yaw.compute(target_yaw_pitch_roll[0],
-                                 current_yaw_pitch_roll[0], dt_pid);
+    // dt_pid = 0.01;
+    // roll_output = pid_roll.compute(target_yaw_pitch_roll[2],
+    //                                current_yaw_pitch_roll[2], dt_pid);
+    // pitch_output = pid_pitch.compute(target_yaw_pitch_roll[1],
+    //                                  current_yaw_pitch_roll[1], dt_pid);
+    // yaw_output = pid_yaw.compute(target_yaw_pitch_roll[0],
+    //                              current_yaw_pitch_roll[0], dt_pid);
 
-    update_motor_speeds(roll_output, pitch_output, yaw_output);
+    // update_motor_speeds(roll_output, pitch_output, yaw_output);
     motor_set_speed();
     break;
 

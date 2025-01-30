@@ -10,7 +10,7 @@ int current_yaw_pitch_roll[] = {0, 0, 0};
 int target_yaw_pitch_roll[] = {0, 0, 0};
 int error_yaw_pitch_roll[] = {0, 0, 0};
 
-int throttle = 150;
+int throttle[] = {150, 150, 150, 150};
 int min_motor_speed = 0;
 int max_motor_speed = 255;
 
@@ -31,10 +31,14 @@ void motor_set_speed(int speed_fwd, int speed_left, int speed_bwd,
 void update_motor_speeds(float roll_output, float pitch_output,
                          float yaw_output) {
   // calculate speed of each motor
-  int M1 = static_cast<int>(throttle - roll_output - pitch_output + yaw_output);
-  int M2 = static_cast<int>(throttle + roll_output - pitch_output - yaw_output);
-  int M3 = static_cast<int>(throttle - roll_output + pitch_output - yaw_output);
-  int M4 = static_cast<int>(throttle + roll_output + pitch_output + yaw_output);
+  int M1 =
+      static_cast<int>(throttle[0] - roll_output - pitch_output + yaw_output);
+  int M2 =
+      static_cast<int>(throttle[1] + roll_output - pitch_output - yaw_output);
+  int M3 =
+      static_cast<int>(throttle[2] - roll_output + pitch_output - yaw_output);
+  int M4 =
+      static_cast<int>(throttle[3] + roll_output + pitch_output + yaw_output);
 
   // constrain voltage
   speed[0] = constrain(M1, min_motor_speed, max_motor_speed);
