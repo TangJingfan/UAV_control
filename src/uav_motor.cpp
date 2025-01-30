@@ -8,6 +8,8 @@ int speed[] = {-1, -1, -1, -1};
 
 int yaw_pitch_roll[] = {-1, -1, -1};
 
+int target_yaw_pitch_roll[] = {0, 0, 0};
+
 void motor_set_speed() {
   for (int i = 0; i < motor_num; i++) {
     analogWrite(motor[i], speed[i]);

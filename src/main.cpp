@@ -24,10 +24,22 @@ void loop() {
     current_state = executing;
   }
 
-  // use Euler angle to represent UAV's attitude
-  // basic format: <y:0,p:0,r:0>
-  // use speed to control uav
-  // basic format: <m1,m2,m3,m4>
+  /*
+    use Euler angle to represent UAV's attitude
+    basic format: <y:0,p:0,r:0>
+    use speed to control uav
+    basic format: <m1,m2,m3,m4>
+  */
+
+  // calculate Euler angle by MPU6500
+  calculate_euler_angle();
+
+  Serial2.print("yaw: ");
+  Serial2.println(yaw_pitch_roll[0]);
+  Serial2.print("pitch: ");
+  Serial2.println(yaw_pitch_roll[1]);
+  Serial2.print("roll: ");
+  Serial2.println(yaw_pitch_roll[2]);
 
   switch (current_state) {
   case waiting:
@@ -43,8 +55,11 @@ void loop() {
       int end = executing_command.indexOf('>') + 1;
       if (begin != -1 && end != -1 && begin < end) {
         // assign value to attitude array
-        // sscanf(executing_command.substring(begin, end).c_str(),
-        //        "<y:%d,p:%d,r:%d>", &attitude[0], &attitude[1], &attitude[2]);
+        /*
+          sscanf(executing_command.substring(begin, end).c_str(),
+            "<y:%d,p:%d,r:%d>", &target_yaw_pitch_roll[0],
+            &target_yaw_pitch_roll[1], &target_yaw_pitch_roll[2]);
+        */
 
         // assign value to speed array
         sscanf(executing_command.substring(begin, end).c_str(), "<%d,%d,%d,%d>",
