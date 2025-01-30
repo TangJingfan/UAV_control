@@ -4,11 +4,15 @@
 
 This repository is a module for the [LoRa Wireless Control Drone](https://github.com/Lorraine0666/LoRa-Wireless-Control-Drone), designed to control the attitude and communication of the drone via LoRa technology.
 
-## Structure
+---
+
+## Code Structure
 
 The code is built using `Platform IO`. All related header files are located in the `include` folder, and the source code files can be found in the `src` folder.
 
 ![vs code](./image/vs_code.png)
+
+---
 
 ## Prerequisites
 
@@ -23,6 +27,8 @@ Before compiling and running the code, make sure you have the following installe
 - **HC-T串口助手**: This works to send information to UAV.
 
 ![HC-T串口助手](./image/HC-T串口助手.png)
+
+---
 
 ## Compile & Run
 
@@ -59,9 +65,3 @@ Before compiling and running the code, make sure you have the following installe
    - Type the message you wish to send.
    - Click **发送信息** to transmit the message. Make sure both HC-14 modules are set up identically to ensure reliable communication.
 
-
-
-## Troubleshooting
-
-- If you encounter issues with uploading the code, ensure that the STM32 board is properly connected and the correct port is selected in Platform IO.
-- If the build fails, check the `platformio.ini` file for the correct board configuration and dependencies.
