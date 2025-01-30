@@ -26,15 +26,14 @@ void loop() {
 
   // use Euler angle to represent UAV's attitude
   // basic format: <y:0,p:0,r:0>
+  // use speed to control uav
+  // basic format: <m1,m2,m3,m4>
 
   switch (current_state) {
   case waiting:
     motor_set_speed();
     break;
   case executing:
-    // print executing command
-    Serial2.println("Executing Message:");
-    Serial2.println(executing_command);
     // update executing command
     executing_command = received_command;
     received_command = "";
@@ -53,22 +52,12 @@ void loop() {
       }
     }
 
-    // print attitude value
-    Serial2.printf("yaw:%d\n", yaw_pitch_roll[0]);
-    Serial2.printf("roll:%d\n", yaw_pitch_roll[1]);
-    Serial2.printf("pitch:%d\n", yaw_pitch_roll[2]);
-
     motor_set_speed();
     break;
 
   default:
     break;
   }
-
-  // digitalWrite(LED1, HIGH);
-  // delay(1000);
-  // digitalWrite(LED1, LOW);
-  // delay(1000);
 
   delay(20);
 }
