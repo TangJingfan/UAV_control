@@ -7,11 +7,11 @@
 #include <LoRa.h>
 #include <SPI.h>
 
-pid_controller pid_yaw(1.0, 0.1, 0.05);
-pid_controller pid_pitch(1.0, 0.1, 0.05);
-pid_controller pid_roll(1.0, 0.1, 0.05);
+pid_controller pid_yaw(0.8, 0.1, 0.05);
+pid_controller pid_pitch(0.8, 0.1, 0.05);
+pid_controller pid_roll(0.8, 0.1, 0.05);
 
-enum state { waiting, executing };
+enum state { waiting, executing, stop };
 
 state current_state = waiting;
 String received_command = "";
@@ -34,6 +34,10 @@ void loop() {
     current_state = executing;
   }
 
+  if (received_command == "<STOP>") {
+    current_state = stop;
+  }
+
   /*
     use Euler angle to represent UAV's attitude
     basic format: <y:0,p:0,r:0>
@@ -44,8 +48,17 @@ void loop() {
   // calculate Euler angle by MPU6500
   calculate_euler_angle();
 
+  // for (int k = 0; k < 3; k++) {
+  //   Serial2.println(current_yaw_pitch_roll[k]);
+  // }
+
+  // for (int l = 0; l < motor_num; l++) {
+  //   Serial2.println(speed[l]);
+  // }
+
   switch (current_state) {
   case waiting:
+
     // dt_pid = 0.01;
     // roll_output = pid_roll.compute(target_yaw_pitch_roll[2],
     //                                current_yaw_pitch_roll[2], dt_pid);
@@ -57,6 +70,7 @@ void loop() {
     // update_motor_speeds(roll_output, pitch_output, yaw_output);
     motor_set_speed();
     break;
+
   case executing:
     // update executing command
     executing_command = received_command;
@@ -90,6 +104,13 @@ void loop() {
     // update_motor_speeds(roll_output, pitch_output, yaw_output);
     motor_set_speed();
     break;
+
+  case stop:
+
+    for (int j = 0; j < motor_num; j++) {
+      speed[j] = 0;
+    }
+    motor_set_speed();
 
   default:
     break;

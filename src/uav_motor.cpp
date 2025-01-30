@@ -10,7 +10,7 @@ int current_yaw_pitch_roll[] = {0, 0, 0};
 int target_yaw_pitch_roll[] = {0, 0, 0};
 int error_yaw_pitch_roll[] = {0, 0, 0};
 
-int throttle[] = {150, 150, 150, 150};
+int throttle[] = {100, 100, 100, 100};
 int min_motor_speed = 0;
 int max_motor_speed = 255;
 

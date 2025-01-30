@@ -1,5 +1,4 @@
 #include "imu.h"
-#include "filter.h"
 #include "port.h"
 #include "uav_motor.h"
 #include <Arduino.h>
@@ -60,13 +59,6 @@ float k_k[2][2] = {{0, 0}, {0, 0}};
 
 float yaw = 0, roll = 0, pitch = 0;
 
-// alpha for low-pass-filter
-float gyro_alpha = 0.1;
-float acc_alpha = 0.05;
-
-float last_gyro_roll = 0.0, last_gyro_pitch = 0.0;
-float last_acc_roll = 0.0, last_acc_pitch = 0.0;
-
 static void initialize_kalman_filter() {
   e_P[0][0] = 1;
   e_P[0][1] = 0;
@@ -125,11 +117,12 @@ void calculate_euler_angle() {
   last_time = now;
 
   // calculate angular velocity on roll and pitch
+  roll_v = gyr.x + ((sin(k_pitch) * sin(k_roll)) / cos(k_pitch)) * gyr.y +
+           ((sin(k_pitch) * cos(k_roll)) / cos(k_pitch)) * gyr.z;
+  pitch_v = cos(k_roll) * gyr.y - sin(k_roll) * gyr.z;
   // priori roll angle and pitch angle
-  gyro_roll = low_pass_filter(gyr.x, last_gyro_roll, gyro_alpha);
-  gyro_pitch = low_pass_filter(gyr.y, last_gyro_pitch, gyro_alpha);
-  last_gyro_roll = gyro_roll;
-  last_gyro_pitch = gyro_pitch;
+  gyro_roll = k_roll + dt * roll_v;
+  gyro_pitch = k_pitch + dt * pitch_v;
 
   // calculate priori converiance matrix
   e_P[0][0] = e_P[0][0] + 0.0025;
@@ -145,11 +138,6 @@ void calculate_euler_angle() {
 
   acc_roll = atan(gValue.y / gValue.z) * rad2deg;
   acc_pitch = -1 * atan(gValue.x / sqrt(sq(gValue.y) + sq(gValue.z))) * rad2deg;
-
-  acc_roll = low_pass_filter(acc_roll, last_acc_roll, acc_alpha);
-  acc_pitch = low_pass_filter(acc_pitch, last_acc_pitch, acc_alpha);
-  last_acc_roll = acc_roll;
-  last_acc_pitch = acc_pitch;
 
   k_roll = gyro_roll + k_k[0][0] * (acc_roll - gyro_roll);
   k_pitch = gyro_pitch + k_k[1][1] * (acc_pitch - gyro_pitch);

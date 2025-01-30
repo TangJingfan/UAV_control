@@ -8,7 +8,7 @@ extern int current_yaw_pitch_roll[];
 extern int target_yaw_pitch_roll[];
 extern int error_yaw_pitch_roll[];
 
-extern float throttle;
+extern float throttle[];
 extern float min_motor_speed;
 extern float max_motor_speed;
 
