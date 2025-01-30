@@ -34,13 +34,6 @@ void loop() {
   // calculate Euler angle by MPU6500
   calculate_euler_angle();
 
-  Serial2.print("yaw: ");
-  Serial2.println(yaw_pitch_roll[0]);
-  Serial2.print("pitch: ");
-  Serial2.println(yaw_pitch_roll[1]);
-  Serial2.print("roll: ");
-  Serial2.println(yaw_pitch_roll[2]);
-
   switch (current_state) {
   case waiting:
     motor_set_speed();
