@@ -145,7 +145,7 @@ void calculate_euler_angle() {
   roll = 3.0 * k_roll;
   pitch = 3.0 * k_pitch;
   yaw += gyr.z * dt;
-  yaw_pitch_roll[0] = yaw;
-  yaw_pitch_roll[1] = pitch;
-  yaw_pitch_roll[2] = roll;
+  current_yaw_pitch_roll[0] = yaw;
+  current_yaw_pitch_roll[1] = pitch;
+  current_yaw_pitch_roll[2] = roll;
 }

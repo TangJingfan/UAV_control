@@ -1,16 +1,26 @@
 #include "config.h"
 #include "imu.h"
+#include "pid.h"
 #include "port.h"
 #include "uav_motor.h"
 #include <Arduino.h>
 #include <LoRa.h>
 #include <SPI.h>
 
+pid_controller pid_yaw(1.0, 0.1, 0.05);
+pid_controller pid_pitch(1.0, 0.1, 0.05);
+pid_controller pid_roll(1.0, 0.1, 0.05);
+
 enum state { waiting, executing };
 
 state current_state = waiting;
 String received_command = "";
 String executing_command = "";
+
+float dt_pid;
+float roll_output;
+float pitch_output;
+float yaw_output;
 
 void setup() {
   config_setup();
@@ -48,18 +58,27 @@ void loop() {
       int end = executing_command.indexOf('>') + 1;
       if (begin != -1 && end != -1 && begin < end) {
         // assign value to attitude array
-        /*
-          sscanf(executing_command.substring(begin, end).c_str(),
-            "<y:%d,p:%d,r:%d>", &target_yaw_pitch_roll[0],
-            &target_yaw_pitch_roll[1], &target_yaw_pitch_roll[2]);
-        */
+        sscanf(executing_command.substring(begin, end).c_str(),
+               "<y:%d,p:%d,r:%d>", &target_yaw_pitch_roll[0],
+               &target_yaw_pitch_roll[1], &target_yaw_pitch_roll[2]);
 
         // assign value to speed array
-        sscanf(executing_command.substring(begin, end).c_str(), "<%d,%d,%d,%d>",
-               &speed[0], &speed[1], &speed[2], &speed[3]);
+        /*
+          sscanf(executing_command.substring(begin, end).c_str(),
+            "<%d,%d,%d,%d>", &speed[0], &speed[1], &speed[2], &speed[3]);
+        */
       }
     }
 
+    dt_pid = 0.01;
+    roll_output = pid_roll.compute(target_yaw_pitch_roll[2],
+                                   current_yaw_pitch_roll[2], dt_pid);
+    pitch_output = pid_pitch.compute(target_yaw_pitch_roll[1],
+                                     current_yaw_pitch_roll[1], dt_pid);
+    yaw_output = pid_yaw.compute(target_yaw_pitch_roll[0],
+                                 current_yaw_pitch_roll[0], dt_pid);
+
+    update_motor_speeds(roll_output, pitch_output, yaw_output);
     motor_set_speed();
     break;
 
