@@ -1,16 +1,21 @@
 #ifndef PORT_H
 #define PORT_H
 
-// macro define
+/**
+ * * Macro Definition
+ */
+
 // motor
 #define PWM1 PA8
 #define PWM2 PA11
 #define PWM3 PB6
 #define PWM4 PB7
 
+// I2C
 #define I2C_SCL PB10
 #define I2C_SDA PB11
 
+// Serial
 #define TX1 PA9
 #define RX1 PA10
 #define TX2 PA2

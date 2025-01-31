@@ -3,6 +3,11 @@
 
 #include <MPU6500_WE.h>
 
+/**
+ * @brief macro definition here
+ * * work as index of array
+ * * all array should follow this order
+ */
 #define imu_x_axis 0
 #define imu_y_axis 1
 #define imu_z_axis 2
@@ -12,8 +17,9 @@
 #define uav_yaw 2
 
 /**
- * we get roll angle from x_axis
- * we get pitch angle from y_axis
+ * @brief get current attitude
+ * * roll angle value from x_axis
+ * * pitch angle value from y_axis
  */
 extern float current_attitude[];
 
@@ -25,6 +31,8 @@ void imu_setup();
 /**
  * @brief calculate Euler angle
  * ! the value of yaw is not reliable
+ * ! yaw is not addressed in this project with mpu6500
+ * ! please use mpu9250 instead
  */
 void calculate_euler_angle();
 
