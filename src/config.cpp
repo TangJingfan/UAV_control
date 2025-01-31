@@ -6,9 +6,12 @@
 // Micro USB
 HardwareSerial Serial1(RX1, TX1);
 
-int motor_num = 4;
+void board_setup() {
+  // initialize LED lights
+  // lights can be used to debug
+  pinMode(LED1, OUTPUT);
+  pinMode(LED2, OUTPUT);
 
-void config_setup() {
   // initialize PWM pins
   // PWM pins are for motor
   pinMode(PWM1, OUTPUT);
@@ -18,11 +21,6 @@ void config_setup() {
 
   // initialize battery pin
   pinMode(ADC_BATTERY, INPUT_ANALOG);
-
-  // initialize LED lights
-  // lights can be used to debug
-  pinMode(LED1, OUTPUT);
-  pinMode(LED2, OUTPUT);
 
   // initialize Serial1
   // Serial1 is for Micro USB wired connection
