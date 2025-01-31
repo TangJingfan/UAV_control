@@ -1,10 +1,19 @@
 #ifndef PID_H
-#define PID_h
+#define PID_H
 
-void calculate_setpoints();
+#include "uav_motor.h"
 
-void calculate_errors();
+class pid_controller {
+public:
+  pid_controller(float p[], float i[], float d[]);
 
-void pid_controller();
+  void compute(float setpoint[], float measured_value[]);
+
+  void set_parameters(float p[], float i[], float d[]);
+
+private:
+  float kp[3], ki[3], kd[3];
+  float error[3], prev_error[3], integral[3], derivative[3];
+};
 
 #endif
