@@ -1,7 +1,9 @@
 #include "config.h"
 #include "imu.h"
+#include "pid.h"
 #include "port.h"
 #include "state.h"
+#include "uav_motor.h"
 #include <Arduino.h>
 
 // Finite State Machine
@@ -11,7 +13,15 @@ State current_state = STATE_STOP;
 // receive information from Serial2
 String target_attitude_info = "";
 
+// target attitude of uav
+// in order of roll, pitch, yaw
 float target_attitude[3];
+
+float Kp[] = {1, 1, 1};
+float Ki[] = {1, 1, 1};
+float Kd[] = {1, 1, 1};
+
+pid_controller uav_attitude_control(Kp, Ki, Kd);
 
 void setup() {
   // 1. setup board
@@ -50,12 +60,21 @@ void loop() {
     }
   }
 
-  // 6. set points
+  // 6. according to target attitude, use pid_controller
+  // 7. set motor speed
+  switch (current_state) {
+  case STATE_STOP:
+    set_motor(STATE_STOP);
+    break;
 
-  // 4. calculate errors
+  case STATE_RUN:
+    uav_attitude_control.compute(target_attitude, current_attitude);
+    set_motor(STATE_RUN);
+    break;
 
-  // 5. according to target attitude, use pid_controller
-  // 6. set motor speed
+  default:
+    break;
+  }
 
   static unsigned long last_time = 0;
   unsigned long current_time = millis();
