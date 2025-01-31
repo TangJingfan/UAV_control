@@ -1,12 +1,17 @@
 #include "config.h"
 #include "imu.h"
-#include "pid.h"
 #include "port.h"
 #include "state.h"
-#include "uav_motor.h"
 #include <Arduino.h>
 
+// Finite State Machine
 State current_state = STATE_STOP;
+
+// Target attitude
+// receive information from Serial2
+String target_attitude_info = "";
+
+float target_attitude[3];
 
 void setup() {
   // 1. setup board
@@ -17,29 +22,40 @@ void setup() {
 
 void loop() {
   // 1. read sensor
-  read_sensor();
-
   // 2. calculate Euler Angle
   calculate_euler_angle();
 
-  // 3. according to target attitude, calculate set points
-  calculate_setpoints();
+  // 3. receive information
+  while (Serial2.available()) {
+    char temp = Serial2.read();
+    target_attitude_info += temp;
+  }
+
+  // 4. change state
+  if (target_attitude_info == "<STOP>") {
+    current_state = STATE_STOP;
+  } else {
+    current_state = STATE_RUN;
+  }
+
+  // 5. store targetted attitude
+  if (target_attitude_info.length() > 0) {
+    int begin = target_attitude_info.indexOf('<');
+    int end = target_attitude_info.indexOf('>') + 1;
+    if (begin != -1 && end != -1 && begin < end) {
+      // assign value to attitude array
+      sscanf(target_attitude_info.substring(begin, end).c_str(),
+             "<y:%f,p:%f,r:%f>", &target_attitude[uav_yaw],
+             &target_attitude[uav_pitch], &target_attitude[uav_roll]);
+    }
+  }
+
+  // 6. set points
 
   // 4. calculate errors
-  calculate_errors();
 
   // 5. according to target attitude, use pid_controller
   // 6. set motor speed
-  switch (current_state) {
-  case STATE_RUN:
-    pid_controller();
-    set_motor_speed();
-    break;
-
-  default:
-    set_motor_speed();
-    break;
-  }
 
   static unsigned long last_time = 0;
   unsigned long current_time = millis();
