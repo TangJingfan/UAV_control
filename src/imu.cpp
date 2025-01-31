@@ -12,7 +12,7 @@
 MPU6500_WE MPU6500_on_drone = MPU6500_WE(MPU6500_ADDR);
 
 // attitude array of uav
-float attitude[] = {0, 0, 0};
+float current_attitude[] = {0, 0, 0};
 
 void imu_setup() {
   // 1. set I2C pin
@@ -53,7 +53,7 @@ void calculate_euler_angle() {
   xyzFloat angle = MPU6500_on_drone.getAngles();
 
   // 2. assign values
-  attitude[imu_x_axis] = angle.x;
-  attitude[imu_y_axis] = angle.y;
-  attitude[imu_z_axis] = angle.z;
+  current_attitude[imu_x_axis] = angle.x;
+  current_attitude[imu_y_axis] = angle.y;
+  current_attitude[imu_z_axis] = angle.z;
 }

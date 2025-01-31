@@ -15,7 +15,7 @@
  * we get roll angle from x_axis
  * we get pitch angle from y_axis
  */
-extern float attitude[];
+extern float current_attitude[];
 
 /**
  * @brief basic setup of imu MPU6500
