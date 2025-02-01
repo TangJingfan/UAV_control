@@ -29,10 +29,10 @@ float target_attitude[3];
  * * 6-8: {m3: roll, pitch, yaw}
  * * 9-11: {m4: roll, pitch, yaw}
  */
-float Kp[12] = {2.9, 1, 1, 2.9, 1, 1, 4.3, 1, 1, 4.3, 1, 1};
-float Kp_small_angle[12] = {4.8, 1, 1, 4.8, 1, 1, 6.8, 1, 1, 6.8, 1, 1};
+float Kp[12] = {2.9, 0, 0, 2.9, 0, 0, 4.3, 0, 0, 4.3, 0, 0};
+float Kp_small_angle[12] = {4.8, 0, 0, 4.8, 0, 0, 6.8, 0, 0, 6.8, 0, 0};
 float Ki[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-float Kd[12] = {1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0};
+float Kd[12] = {0.5, 0, 0, 0.5, 0, 0, 0.5, 0, 0, 0.5, 0, 0};
 
 pid_controller uav_attitude_control(Kp, Ki, Kd, Kp_small_angle);
 
