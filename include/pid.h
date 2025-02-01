@@ -13,7 +13,7 @@ public:
   /**
    * @brief constructor
    */
-  pid_controller(float p[], float i[], float d[]);
+  pid_controller(float **p, float **i, float **d);
 
   /**
    * @brief pid algorithm
@@ -23,7 +23,7 @@ public:
   /**
    * @brief change parameters during main loop
    */
-  void set_parameters(float p[], float i[], float d[]);
+  void set_parameters(float **p, float **i, float **d);
 
   /**
    * @brief reset all terms
@@ -35,7 +35,7 @@ private:
    * @brief pid constant array
    * * follow the order of roll, pitch, yaw
    */
-  float kp[3], ki[3], kd[3];
+  float kp[4][3], ki[4][3], kd[4][3];
   /**
    * @brief other important data in pid algorithm
    */
