@@ -15,7 +15,7 @@ int speed[] = {0, 0, 0, 0};
 
 // array of throttle
 // definition: minimum voltage for motor to make uav fly
-int throttle[] = {63, 63, 63, 63};
+int throttle[] = {100, 100, 100, 100};
 
 /**
  * @brief set motor speed according to speed[]
