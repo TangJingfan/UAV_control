@@ -40,7 +40,7 @@ private:
    * * 9-11: {m4: roll, pitch, yaw}
    */
   float kp[12], ki[12], kd[12];
-  float kp_small_angle[12];
+  float kp_extreme[12];
   /**
    * @brief other important data in pid algorithm
    */
