@@ -36,3 +36,12 @@ void pid_controller::compute(float setpoint[], float measured_value[]) {
   speed[2] = throttle[2] - result[0] + result[1];
   speed[3] = throttle[3] + result[0] + result[1];
 }
+
+void pid_controller::reset() {
+  for (int j = 0; j < 3; j++) {
+    this->derivative[j] = 0;
+    this->integral[j] = 0;
+    this->error[j] = 0;
+    this->prev_error[j] = 0;
+  }
+}

@@ -25,6 +25,11 @@ public:
    */
   void set_parameters(float p[], float i[], float d[]);
 
+  /**
+   * @brief reset all terms
+   */
+  void reset();
+
 private:
   /**
    * @brief pid constant array
