@@ -21,11 +21,20 @@ String target_attitude_info;
 // in order of roll, pitch, yaw
 float target_attitude[3];
 
-float Kp[] = {1, 1, 1};
-float Ki[] = {1, 1, 1};
-float Kd[] = {1, 1, 1};
+/**
+ * @brief pid constant array
+ * * follow the order of
+ * * 0-2: {m1: roll, pitch, yaw}
+ * * 3-5: {m2: roll, pitch, yaw}
+ * * 6-8: {m3: roll, pitch, yaw}
+ * * 9-11: {m4: roll, pitch, yaw}
+ */
+float Kp[12] = {2.9, 1, 1, 2.9, 1, 1, 4.3, 1, 1, 4.3, 1, 1};
+float Kp_small_angle[12] = {4.8, 1, 1, 4.8, 1, 1, 6.8, 1, 1, 6.8, 1, 1};
+float Ki[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+float Kd[12] = {1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0};
 
-pid_controller uav_attitude_control(Kp, Ki, Kd);
+pid_controller uav_attitude_control(Kp, Ki, Kd, Kp_small_angle);
 
 void setup() {
   // 1. setup board
@@ -46,6 +55,14 @@ void loop() {
   // 1. read sensor
   // 2. calculate Euler Angle
   calculate_euler_angle();
+  // DEBUG
+  // print Euler angle
+  Serial1.print("roll:");
+  Serial1.println(current_attitude[uav_roll]);
+  // Serial1.print("pitch:");
+  // Serial1.println(current_attitude[uav_pitch]);
+  // Serial1.print("yaw:");
+  // Serial1.println(current_attitude[uav_yaw]);
 
   // 3. receive information
   while (Serial2.available()) {
@@ -86,9 +103,6 @@ void loop() {
     current_state = STATE_STOP;
   }
 
-  Serial1.println(current_state);
-  Serial1.println(target_attitude_info);
-
   // 5. store targetted attitude
   if (target_attitude_info.length() > 0) {
     int begin = target_attitude_info.indexOf('<');
@@ -116,6 +130,15 @@ void loop() {
   default:
     set_motor(STATE_STOP);
     break;
+  }
+
+  // DEBUG
+  // print motor speed
+  for (int m = 0; m < motor_nums; m++) {
+    Serial1.print("motor");
+    Serial1.print(m);
+    Serial1.print(": ");
+    Serial1.println(speed[m]);
   }
 
   static unsigned long last_time = 0;
