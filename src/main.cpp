@@ -1,17 +1,21 @@
 #include "config.h"
 #include "imu.h"
+#include "message_format.h"
 #include "pid.h"
 #include "port.h"
 #include "state.h"
 #include "uav_motor.h"
 #include <Arduino.h>
 
-// Finite State Machine
-State current_state = STATE_STOP;
+// Finite State Machine for execution
+State current_state;
+
+// Finite State Machine for receiving information
+bool is_receiving;
 
 // Target attitude
 // receive information from Serial2
-String target_attitude_info = "";
+String target_attitude_info;
 
 // target attitude of uav
 // in order of roll, pitch, yaw
@@ -28,6 +32,14 @@ void setup() {
   board_setup();
   // 2. setup imu
   imu_setup();
+  // 3. initialize received information
+  target_attitude_info = "";
+  // 4. reset pid controller
+  uav_attitude_control.reset();
+  // 5. initialize current state
+  current_state = STATE_STOP;
+  // 6. initialize information receiving state
+  delay(1000);
 }
 
 void loop() {
@@ -38,15 +50,44 @@ void loop() {
   // 3. receive information
   while (Serial2.available()) {
     char temp = Serial2.read();
-    target_attitude_info += temp;
+
+    // start receiving
+    if (temp == '<') {
+      // throw old message
+      target_attitude_info = "";
+      // update state
+      is_receiving = true;
+    }
+
+    // update string
+    if (is_receiving) {
+      target_attitude_info += temp;
+    }
+
+    // end receiving
+    if (temp == '>') {
+      is_receiving = false;
+
+      // check whether information is correct
+      if (target_attitude_info.startsWith("<") &&
+          target_attitude_info.endsWith(">")) {
+        continue;
+      } else {
+        // refresh
+        target_attitude_info = "";
+      }
+    }
   }
 
   // 4. change state
-  if (target_attitude_info == "<STOP>") {
-    current_state = STATE_STOP;
-  } else {
+  if (is_target_attitude_format(target_attitude_info)) {
     current_state = STATE_RUN;
+  } else {
+    current_state = STATE_STOP;
   }
+
+  Serial1.println(current_state);
+  Serial1.println(target_attitude_info);
 
   // 5. store targetted attitude
   if (target_attitude_info.length() > 0) {
@@ -73,6 +114,7 @@ void loop() {
     break;
 
   default:
+    set_motor(STATE_STOP);
     break;
   }
 
