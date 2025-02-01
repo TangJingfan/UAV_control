@@ -19,7 +19,10 @@
 /**
  * @brief get current attitude
  * * roll angle value from x_axis
+ * * raised +x-axis leads to positive roll
+ *
  * * pitch angle value from y_axis
+ * * raised +y-axis leads to positive pitch
  */
 extern float current_attitude[];
 
