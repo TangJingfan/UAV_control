@@ -29,9 +29,9 @@ float target_attitude[3];
  * * 6-8: {m3: roll, pitch, yaw}
  * * 9-11: {m4: roll, pitch, yaw}
  */
-float Kp[12] = {2.5, 0, 0, 2.5, 0, 0, 2.5, 0, 0, 2.5, 0, 0};
-float Kp_mild[12] = {4.5, 0, 0, 4.5, 0, 0, 4.5, 0, 0, 4.5, 0, 0};
-float Kp_extreme[12] = {8, 0, 0, 8, 0, 0, 8, 0, 0, 8, 0, 0};
+float Kp[12] = {2.5, 2.5, 0, 2.5, 2.5, 0, 2.5, 2.5, 0, 2.5, 2.5, 0};
+float Kp_mild[12] = {4.5, 4.5, 0, 4.5, 4.5, 0, 4.5, 4.5, 0, 4.5, 4.5, 0};
+float Kp_extreme[12] = {8, 8, 0, 8, 8, 0, 8, 8, 0, 8, 8, 0};
 float Ki[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 float Kd[12] = {0.75, 0, 0, 0.75, 0, 0, 0.75, 0, 0, 0.75, 0, 0};
 
@@ -128,8 +128,8 @@ void loop() {
     uav_attitude_control.compute(target_attitude, current_attitude);
     set_motor(STATE_RUN);
     reset_throttle();
-    Serial1.print("roll:");
-    Serial1.println(current_attitude[uav_roll]);
+    Serial1.print("pitch:");
+    Serial1.println(current_attitude[uav_pitch]);
     for (int y = 0; y < motor_nums; y++) {
       Serial1.print("motor ");
       Serial1.print(y);

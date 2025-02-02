@@ -98,10 +98,10 @@ void pid_controller::compute(float setpoint[], float measured_value[]) {
   }
 
   // what matters is roll and pitch
-  speed[0] = constrain(throttle[0] - roll_result[0] + pitch_result[0], 30, 220);
-  speed[1] = constrain(throttle[1] - roll_result[1] - pitch_result[1], 30, 220);
-  speed[2] = constrain(throttle[2] + roll_result[2] + pitch_result[2], 30, 200);
-  speed[3] = constrain(throttle[3] + roll_result[3] - pitch_result[3], 30, 200);
+  speed[0] = constrain(throttle[0] - roll_result[0] - pitch_result[0], 30, 220);
+  speed[1] = constrain(throttle[1] - roll_result[1] + pitch_result[1], 30, 220);
+  speed[2] = constrain(throttle[2] + roll_result[2] - pitch_result[2], 30, 200);
+  speed[3] = constrain(throttle[3] + roll_result[3] + pitch_result[3], 30, 200);
 }
 
 void pid_controller::reset() {
