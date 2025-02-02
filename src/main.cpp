@@ -29,12 +29,13 @@ float target_attitude[3];
  * * 6-8: {m3: roll, pitch, yaw}
  * * 9-11: {m4: roll, pitch, yaw}
  */
-float Kp[12] = {6, 0, 0, 6, 0, 0, 6, 0, 0, 6, 0, 0};
+float Kp[12] = {2.5, 0, 0, 2.5, 0, 0, 2.5, 0, 0, 2.5, 0, 0};
+float Kp_mild[12] = {4.5, 0, 0, 4.5, 0, 0, 4.5, 0, 0, 4.5, 0, 0};
 float Kp_extreme[12] = {8, 0, 0, 8, 0, 0, 8, 0, 0, 8, 0, 0};
 float Ki[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-float Kd[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+float Kd[12] = {0.75, 0, 0, 0.75, 0, 0, 0.75, 0, 0, 0.75, 0, 0};
 
-pid_controller uav_attitude_control(Kp, Ki, Kd, Kp_extreme);
+pid_controller uav_attitude_control(Kp, Ki, Kd, Kp_mild, Kp_extreme);
 
 void setup() {
   // 1. setup board
@@ -58,8 +59,8 @@ void loop() {
 
   // DEBUG
   // print Euler angle
-  Serial1.print("roll:");
-  Serial1.println(current_attitude[uav_roll]);
+  // Serial1.print("roll:");
+  // Serial1.println(current_attitude[uav_roll]);
   // Serial1.print("pitch:");
   // Serial1.println(current_attitude[uav_pitch]);
   // Serial1.print("yaw:");
@@ -127,6 +128,15 @@ void loop() {
     uav_attitude_control.compute(target_attitude, current_attitude);
     set_motor(STATE_RUN);
     reset_throttle();
+    Serial1.print("roll:");
+    Serial1.println(current_attitude[uav_roll]);
+    for (int y = 0; y < motor_nums; y++) {
+      Serial1.print("motor ");
+      Serial1.print(y);
+      Serial1.print(": ");
+      Serial1.println(speed[y]);
+    }
+
     break;
 
   default:

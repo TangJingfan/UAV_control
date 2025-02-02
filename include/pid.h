@@ -13,17 +13,13 @@ public:
   /**
    * @brief constructor
    */
-  pid_controller(float p[], float i[], float d[], float p_small_angle[]);
+  pid_controller(float p[], float i[], float d[], float p_mild[],
+                 float p_extreme[]);
 
   /**
    * @brief pid algorithm
    */
   void compute(float setpoint[], float measured_value[]);
-
-  /**
-   * @brief change parameters during main loop
-   */
-  void set_parameters(float p[], float i[], float d[]);
 
   /**
    * @brief reset all terms
@@ -39,8 +35,9 @@ private:
    * * 6-8: {m3: roll, pitch, yaw}
    * * 9-11: {m4: roll, pitch, yaw}
    */
-  float kp[12], ki[12], kd[12];
-  float kp_extreme[12];
+  float kp[12], kp_mild[12], kp_extreme[12];
+  float ki[12];
+  float kd[12];
   /**
    * @brief other important data in pid algorithm
    */

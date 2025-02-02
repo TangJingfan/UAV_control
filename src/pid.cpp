@@ -1,7 +1,7 @@
 #include "pid.h"
 #include "imu.h"
 
-pid_controller::pid_controller(float p[], float i[], float d[],
+pid_controller::pid_controller(float p[], float i[], float d[], float p_mild[],
                                float p_extreme[]) {
   for (int j = 0; j < 3; j++) {
     prev_error[j] = 0;
@@ -13,17 +13,8 @@ pid_controller::pid_controller(float p[], float i[], float d[],
       kp[3 * k + j] = p[3 * k + j];
       ki[3 * k + j] = i[3 * k + j];
       kd[3 * k + j] = d[3 * k + j];
+      kp_mild[3 * k + j] = p_mild[3 * k + j];
       kp_extreme[3 * k + j] = p_extreme[3 * k + j];
-    }
-  }
-}
-
-void pid_controller::set_parameters(float p[], float i[], float d[]) {
-  for (int j = 0; j < 3; j++) {
-    for (int k = 0; k < 4; k++) {
-      kp[3 * k + j] = p[3 * k + j];
-      ki[3 * k + j] = i[3 * k + j];
-      kd[3 * k + j] = d[3 * k + j];
     }
   }
 }
@@ -46,6 +37,13 @@ void pid_controller::compute(float setpoint[], float measured_value[]) {
                        ki[j * 3] * integral[uav_roll] +
                        kd[j * 3] * derivative[uav_roll];
       pitch_result[j] = kp_extreme[j * 3 + 1] * error[uav_pitch] +
+                        ki[j * 3 + 1] * integral[uav_pitch] +
+                        kd[j * 3 + 1] * derivative[uav_pitch];
+    } else if (fabs(error[uav_roll]) < 20) {
+      roll_result[j] = kp_mild[j * 3] * error[uav_roll] +
+                       ki[j * 3] * integral[uav_roll] +
+                       kd[j * 3] * derivative[uav_roll];
+      pitch_result[j] = kp_mild[j * 3 + 1] * error[uav_pitch] +
                         ki[j * 3 + 1] * integral[uav_pitch] +
                         kd[j * 3 + 1] * derivative[uav_pitch];
     } else {
@@ -104,13 +102,6 @@ void pid_controller::compute(float setpoint[], float measured_value[]) {
   speed[1] = constrain(throttle[1] - roll_result[1] - pitch_result[1], 30, 220);
   speed[2] = constrain(throttle[2] + roll_result[2] + pitch_result[2], 30, 200);
   speed[3] = constrain(throttle[3] + roll_result[3] - pitch_result[3], 30, 200);
-
-  for (int k = 0; k < motor_nums; k++) {
-    Serial1.print("motor ");
-    Serial1.print(k);
-    Serial1.print(": ");
-    Serial1.println(speed[k]);
-  }
 }
 
 void pid_controller::reset() {
