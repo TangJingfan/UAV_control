@@ -146,7 +146,7 @@ void loop() {
 
   static unsigned long last_time = 0;
   unsigned long current_time = millis();
-  if (current_time - last_time < 20) {
+  if (current_time - last_time < 15) {
     return;
   }
   last_time = current_time;
