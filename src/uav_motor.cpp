@@ -15,7 +15,7 @@ int speed[] = {0, 0, 0, 0};
 
 // array of throttle
 // definition: minimum voltage for motor to make uav fly
-int throttle[] = {100, 100, 100, 100};
+int throttle[] = {80, 80, 80, 80};
 
 /**
  * @brief set motor speed according to speed[]
@@ -32,5 +32,11 @@ void set_motor(State current_state) {
     for (int j = 0; j < motor_nums; j++) {
       analogWrite(motor[j], 0);
     }
+  }
+}
+
+void reset_throttle() {
+  for (int i = 0; i < motor_nums; i++) {
+    throttle[i] = 80;
   }
 }

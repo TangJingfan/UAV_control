@@ -4,6 +4,11 @@
 #include "state.h"
 
 /**
+ * @brief unbalanced direction
+ */
+enum direction { negative_roll, positive_roll, negative_pitch, positive_pitch };
+
+/**
  * @brief number of motors
  * exactly 4.
  */
@@ -31,5 +36,10 @@ extern int throttle[];
  * * RUN when current_state == STATE_RUN
  */
 void set_motor(State current_state);
+
+/**
+ * @brief after compensation, restore the initial value of throttle
+ */
+void reset_throttle();
 
 #endif

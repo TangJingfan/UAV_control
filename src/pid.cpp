@@ -38,28 +38,24 @@ void pid_controller::compute(float setpoint[], float measured_value[]) {
     integral[i] += error[i];
     derivative[i] = error[i] - prev_error[i];
     prev_error[i] = error[i];
-
-    // ! in case of integral windup
-    if (error[i] > 90) {
-      error[i] = 90;
-    } else if (error[i] < -90) {
-      error[i] = -90;
-    }
   }
+
   for (int j = 0; j < 4; j++) {
-    if (error[uav_roll] < 10 || error[uav_roll] > 30) {
+    if (fabs(error[uav_roll]) < 7) {
       roll_result[j] = kp_extreme[j * 3] * error[uav_roll] +
                        ki[j * 3] * integral[uav_roll] +
                        kd[j * 3] * derivative[uav_roll];
+      pitch_result[j] = kp_extreme[j * 3 + 1] * error[uav_pitch] +
+                        ki[j * 3 + 1] * integral[uav_pitch] +
+                        kd[j * 3 + 1] * derivative[uav_pitch];
     } else {
       roll_result[j] = kp[j * 3] * error[uav_roll] +
                        ki[j * 3] * integral[uav_roll] +
                        kd[j * 3] * derivative[uav_roll];
+      pitch_result[j] = kp[j * 3 + 1] * error[uav_pitch] +
+                        ki[j * 3 + 1] * integral[uav_pitch] +
+                        kd[j * 3 + 1] * derivative[uav_pitch];
     }
-
-    pitch_result[j] = kp[j * 3 + 1] * error[uav_pitch] +
-                      ki[j * 3 + 1] * integral[uav_pitch] +
-                      kd[j * 3 + 1] * derivative[uav_pitch];
     yaw_result[j] = kp[j * 3 + 2] * error[uav_yaw] +
                     ki[j * 3 + 2] * integral[uav_yaw] +
                     kd[j * 3 + 2] * derivative[uav_yaw];
@@ -79,11 +75,42 @@ void pid_controller::compute(float setpoint[], float measured_value[]) {
    *            |
    *            y
    */
+
+  // * throttle compensation
+  if (current_attitude[uav_roll] > 0) {
+    throttle[0] += 15;
+    throttle[1] += 15;
+    throttle[2] -= 15;
+    throttle[3] -= 15;
+  } else if (current_attitude[uav_roll] < 0) {
+    throttle[0] -= 15;
+    throttle[1] -= 15;
+    throttle[2] += 15;
+    throttle[3] += 15;
+  } else if (current_attitude[uav_pitch] > 0) {
+    throttle[0] += 15;
+    throttle[1] -= 15;
+    throttle[2] += 15;
+    throttle[3] -= 15;
+  } else if (current_attitude[uav_pitch] < 0) {
+    throttle[0] -= 15;
+    throttle[1] += 15;
+    throttle[2] -= 15;
+    throttle[3] += 15;
+  }
+
   // what matters is roll and pitch
-  speed[0] = throttle[0] + roll_result[0] + pitch_result[0];
-  speed[1] = throttle[1] + roll_result[1] - pitch_result[1];
-  speed[2] = throttle[2] - roll_result[3] + pitch_result[3];
-  speed[3] = throttle[3] - roll_result[2] - pitch_result[2];
+  speed[0] = constrain(throttle[0] - roll_result[0] + pitch_result[0], 30, 220);
+  speed[1] = constrain(throttle[1] - roll_result[1] - pitch_result[1], 30, 220);
+  speed[2] = constrain(throttle[2] + roll_result[2] + pitch_result[2], 30, 200);
+  speed[3] = constrain(throttle[3] + roll_result[3] - pitch_result[3], 30, 200);
+
+  for (int k = 0; k < motor_nums; k++) {
+    Serial1.print("motor ");
+    Serial1.print(k);
+    Serial1.print(": ");
+    Serial1.println(speed[k]);
+  }
 }
 
 void pid_controller::reset() {
