@@ -26,9 +26,30 @@ void pid_controller::compute(float setpoint[], float measured_value[]) {
      * * in order of roll, pitch, yaw
      */
     error[i] = setpoint[i] - measured_value[i];
+    if (fabs(error[i]) < 3) {
+      error[i] = -error[i];
+    }
+
     integral[i] += error[i];
     derivative[i] = error[i] - prev_error[i];
     prev_error[i] = error[i];
+    // ! DEBUG
+    Serial1.print("error ");
+    Serial1.print(i);
+    Serial1.print(": ");
+    Serial1.println(error[i]);
+    Serial1.print("previous error ");
+    Serial1.print(i);
+    Serial1.print(": ");
+    Serial1.println(prev_error[i]);
+    Serial1.print("integral ");
+    Serial1.print(i);
+    Serial1.print(": ");
+    Serial1.println(integral[i]);
+    Serial1.print("derivative ");
+    Serial1.print(i);
+    Serial1.print(": ");
+    Serial1.println(derivative[i]);
   }
 
   for (int j = 0; j < 4; j++) {
@@ -100,10 +121,10 @@ void pid_controller::compute(float setpoint[], float measured_value[]) {
     throttle[3] += motor_compensation;
   }
   if (current_attitude[uav_pitch] > 10) {
-    throttle[0] += motor_compensation;
-    throttle[1] -= motor_compensation;
-    throttle[2] += motor_compensation;
-    throttle[3] -= motor_compensation;
+    throttle[0] += (motor_compensation + 7);
+    throttle[1] -= (motor_compensation + 7);
+    throttle[2] += (motor_compensation + 7);
+    throttle[3] -= (motor_compensation + 7);
   }
   if (current_attitude[uav_pitch] < -10) {
     throttle[0] -= motor_compensation;
@@ -115,32 +136,23 @@ void pid_controller::compute(float setpoint[], float measured_value[]) {
   // what matters is roll and pitch
   target_speed[0] = constrain(throttle[0] - roll_result[0] - pitch_result[0],
                               motor_least_speed, motor_greatest_speed);
-  target_speed[1] =
-      constrain(throttle[1] - roll_result[1] + motor_factor * pitch_result[1],
-                motor_least_speed, motor_greatest_speed);
-  target_speed[2] =
-      constrain(throttle[2] + motor_factor * roll_result[2] - pitch_result[2],
-                motor_least_speed, motor_greatest_speed);
-  target_speed[3] = constrain(throttle[3] + motor_factor * roll_result[3] +
-                                  motor_factor * pitch_result[3],
+  target_speed[1] = constrain(throttle[1] - roll_result[1] + pitch_result[1],
+                              motor_least_speed, motor_greatest_speed);
+  target_speed[2] = constrain(throttle[2] + roll_result[2] - pitch_result[2],
+                              motor_least_speed, motor_greatest_speed);
+  target_speed[3] = constrain(throttle[3] + roll_result[3] + pitch_result[3],
                               motor_least_speed, motor_greatest_speed);
 
   // * special case
   if (fabs(error[uav_pitch]) > 15 && fabs(error[uav_roll]) > 15) {
-    target_speed[0] =
-        constrain(throttle[0] - 1.1 * roll_result[0] - 1.1 * pitch_result[0],
-                  motor_least_speed, motor_greatest_speed + 20);
-    target_speed[1] = constrain(throttle[1] - 1.1 * roll_result[1] +
-                                    1.1 * motor_factor * pitch_result[1],
+    target_speed[0] = constrain(throttle[0] - roll_result[0] - pitch_result[0],
                                 motor_least_speed, motor_greatest_speed + 20);
-    target_speed[2] =
-        constrain(throttle[2] + 1.1 * motor_factor * roll_result[2] -
-                      1.1 * pitch_result[2],
-                  motor_least_speed, motor_greatest_speed + 20);
-    target_speed[3] =
-        constrain(throttle[3] + 1.1 * motor_factor * roll_result[3] +
-                      1.1 * motor_factor * pitch_result[3],
-                  motor_least_speed, motor_greatest_speed + 20);
+    target_speed[1] = constrain(throttle[1] - roll_result[1] + pitch_result[1],
+                                motor_least_speed, motor_greatest_speed + 20);
+    target_speed[2] = constrain(throttle[2] + roll_result[2] - pitch_result[2],
+                                motor_least_speed, motor_greatest_speed + 20);
+    target_speed[3] = constrain(throttle[3] + roll_result[3] + pitch_result[3],
+                                motor_least_speed, motor_greatest_speed + 20);
   }
 }
 
