@@ -21,8 +21,15 @@ extern int motor[];
 
 /**
  * @brief speed array
+ * for inner pid and motor
  */
 extern int speed[];
+
+/**
+ * @brief target speed array
+ * for outer pid
+ */
+extern int target_speed[];
 
 /**
  * @brief minimum speed needed to make uav fly
@@ -41,5 +48,13 @@ void set_motor(State current_state);
  * @brief after compensation, restore the initial value of throttle
  */
 void reset_throttle();
+
+const double motor_factor = 0.88;
+
+const int motor_compensation = 10;
+
+const int motor_least_speed = 30;
+
+const int motor_greatest_speed = 120;
 
 #endif

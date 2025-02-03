@@ -13,6 +13,10 @@ int motor[] = {PWM1, PWM2, PWM3, PWM4};
 // int of 0 - 255
 int speed[] = {0, 0, 0, 0};
 
+// array of target speed
+// int of 0 - 255
+int target_speed[] = {0, 0, 0, 0};
+
 // array of throttle
 // definition: minimum voltage for motor to make uav fly
 int throttle[] = {80, 80, 80, 80};
