@@ -42,6 +42,8 @@ private:
    * @brief other important data in pid algorithm
    */
   float error[3], prev_error[3], integral[3], derivative[3];
+
+  void debug_info(int i);
 };
 
 #endif

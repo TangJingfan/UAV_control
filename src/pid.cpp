@@ -19,6 +19,25 @@ pid_controller::pid_controller(float p[], float i[], float d[], float p_mild[],
   }
 }
 
+void pid_controller::debug_info(int i) {
+  Serial1.print("error ");
+  Serial1.print(i);
+  Serial1.print(": ");
+  Serial1.println(error[i]);
+  Serial1.print("previous error ");
+  Serial1.print(i);
+  Serial1.print(": ");
+  Serial1.println(prev_error[i]);
+  Serial1.print("integral ");
+  Serial1.print(i);
+  Serial1.print(": ");
+  Serial1.println(integral[i]);
+  Serial1.print("derivative ");
+  Serial1.print(i);
+  Serial1.print(": ");
+  Serial1.println(derivative[i]);
+}
+
 void pid_controller::compute(float setpoint[], float measured_value[]) {
   int roll_result[4], pitch_result[4], yaw_result[4];
   for (int i = 0; i < 3; i++) {
@@ -34,22 +53,7 @@ void pid_controller::compute(float setpoint[], float measured_value[]) {
     derivative[i] = error[i] - prev_error[i];
     prev_error[i] = error[i];
     // ! DEBUG
-    Serial1.print("error ");
-    Serial1.print(i);
-    Serial1.print(": ");
-    Serial1.println(error[i]);
-    Serial1.print("previous error ");
-    Serial1.print(i);
-    Serial1.print(": ");
-    Serial1.println(prev_error[i]);
-    Serial1.print("integral ");
-    Serial1.print(i);
-    Serial1.print(": ");
-    Serial1.println(integral[i]);
-    Serial1.print("derivative ");
-    Serial1.print(i);
-    Serial1.print(": ");
-    Serial1.println(derivative[i]);
+    debug_info(i);
   }
 
   for (int j = 0; j < 4; j++) {
