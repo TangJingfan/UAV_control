@@ -148,18 +148,18 @@ void pid_controller::compute(float setpoint[], float measured_value[]) {
                               motor_least_speed, motor_greatest_speed);
 
   // * special case
-  if (fabs(error[uav_pitch]) > 15 && fabs(error[uav_roll]) > 15) {
+  if (fabs(error[uav_pitch]) > 13 && fabs(error[uav_roll]) > 13) {
     target_speed[0] =
-        constrain(throttle[0] - 1.1 * roll_result[0] - 1.1 * pitch_result[0],
+        constrain(throttle[0] - 1.15 * roll_result[0] - 1.15 * pitch_result[0],
                   motor_least_speed, motor_greatest_speed + 20);
     target_speed[1] =
-        constrain(throttle[1] - 1.1 * roll_result[1] + 1.1 * pitch_result[1],
+        constrain(throttle[1] - 1.15 * roll_result[1] + 1.15 * pitch_result[1],
                   motor_least_speed, motor_greatest_speed + 20);
     target_speed[2] =
-        constrain(throttle[2] + 1.1 * roll_result[2] - 1.1 * pitch_result[2],
+        constrain(throttle[2] + 1.15 * roll_result[2] - 1.15 * pitch_result[2],
                   motor_least_speed, motor_greatest_speed + 20);
     target_speed[3] =
-        constrain(throttle[3] + 1.1 * roll_result[3] + 1.1 * pitch_result[3],
+        constrain(throttle[3] + 1.15 * roll_result[3] + 1.15 * pitch_result[3],
                   motor_least_speed, motor_greatest_speed + 20);
   }
 }
