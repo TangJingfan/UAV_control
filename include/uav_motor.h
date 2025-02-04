@@ -51,10 +51,10 @@ void reset_throttle();
 
 const double motor_factor = 0.88;
 
-const int motor_compensation = 10;
+const int motor_compensation = 9;
 
-const int motor_least_speed = 30;
+const int motor_least_speed = 10;
 
-const int motor_greatest_speed = 120;
+const int motor_greatest_speed = 200;
 
 #endif
